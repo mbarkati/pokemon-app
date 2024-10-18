@@ -1,14 +1,15 @@
 package com.example.pokemon_listing.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.onEach
-import androidx.compose.runtime.State
-import com.example.pokemon_listing.common.Resource
 import com.example.pokemon_listing.domain.interactor.GetPokemonsInteractor
-import kotlinx.coroutines.flow.launchIn
+import com.example.pokemon_listing.domain.interactor.PokemonListStatus
+import com.example.pokemon_listing.presentation.mappers.transformToPokemonListDisplayModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,43 +17,41 @@ class PokemonListViewModel @Inject constructor(
     private val getPokemonsInteractor: GetPokemonsInteractor
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(PokemonListState())
-    val state: State<PokemonListState> = _state
+    private val _pokemonListUiState = MutableStateFlow<PokemonListUiState>(
+        PokemonListUiState.Loading
+    )
+    val pokemonListUiState = _pokemonListUiState.asStateFlow()
 
-    private var currentPage = 0
-    private val pageSize = 2 // Taille des éléments par page
-    private var isLoadingMore = false
+    private var offset = 0
+    private val limit = 10
+    internal var isLoadingMore = false
 
     init {
         getPokemons()
     }
 
     fun getPokemons() {
-        if (isLoadingMore) return // Évite de lancer plusieurs fois la pagination en même temps
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isLoadingMore) return@launch
+            isLoadingMore = true
 
-        isLoadingMore = true
-        getPokemonsInteractor(pageSize, currentPage * pageSize).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    val newPokemons = result.data ?: emptyList()
-                    _state.value = _state.value.copy(
-                        pokemons = _state.value.pokemons + newPokemons, // Ajoute les nouvelles données à la liste existante
-                        isLoading = false
-                    )
-                    currentPage++ // Incrémente la page après un chargement réussi
-                    isLoadingMore = false
-                }
-                is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        error = result.message ?: "An unexpected error occured",
-                        isLoading = false
-                    )
-                    isLoadingMore = false
-                }
-                is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+            val currentState = _pokemonListUiState.value
+            val currentList = (currentState as? PokemonListUiState.Ready)?.pokemonListDisplayModel ?: emptyList()
+
+            getPokemonsInteractor.getPokemons(limit = limit, offset = offset).let { result ->
+                when (result) {
+                    is PokemonListStatus.Success -> {
+                        offset += limit
+                        val newList = currentList + result.pokemons.map { it.transformToPokemonListDisplayModel() }
+                        _pokemonListUiState.value = PokemonListUiState.Ready(pokemonListDisplayModel = newList)
+                    }
+                    is PokemonListStatus.Error -> {
+                        _pokemonListUiState.value = PokemonListUiState.Error(message = result.message)
+                    }
                 }
             }
-        }.launchIn(viewModelScope)
+
+            isLoadingMore = false
+        }
     }
 }

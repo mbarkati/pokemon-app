@@ -10,57 +10,65 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.pokemon_listing.presentation.components.PokemonListItem
 
 
 @Composable
 fun PokemonListScreen(
-    //navController: NavController,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(state.pokemons.size) { index ->
-                val Pokemon = state.pokemons[index]
-                PokemonListItem(
-                    pokemon = Pokemon,
-                    onItemClick = {
-                        //navController.navigate(Screen.PokemonDetailScreen.route + "/${Pokemon.id}")
-                    }
-                )
 
-                // Vérifie si l'utilisateur a atteint le bas de la liste
-                if (index >= state.pokemons.size - 1 && !state.isLoading) {
-                    // Appelle le ViewModel pour charger plus de données
-                    viewModel.getPokemons()
+    val pokemonListUiState = viewModel.pokemonListUiState.collectAsState().value
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (pokemonListUiState) {
+            is PokemonListUiState.Ready -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(pokemonListUiState.pokemonListDisplayModel.size) { index ->
+                        val pokemon = pokemonListUiState.pokemonListDisplayModel[index]
+                        PokemonListItem(
+                            pokemon = pokemon,
+                            onItemClick = {
+                                // Handle item click
+                            }
+                        )
+                        // Trigger pagination when reaching the end
+                        if (index == pokemonListUiState.pokemonListDisplayModel.lastIndex) {
+                            viewModel.getPokemons()
+                        }
+                    }
+                    item {
+                        // Show a loading indicator when more data is loading
+                        if (viewModel.isLoadingMore) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
                 }
             }
-        }
 
-        if(state.error.isNotBlank()) {
-            Text(
-                text = state.error,
-                color = MaterialTheme.colors.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .align(Alignment.Center)
-            )
-        }
+            is PokemonListUiState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-        if(state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            is PokemonListUiState.Error -> {
+                Text(
+                    text = pokemonListUiState.message ?: "",
+                    color = MaterialTheme.colors.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
 }

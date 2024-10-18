@@ -1,9 +1,9 @@
 package com.example.pokemon_listing.domain.repository
 
-import com.example.pokemon_listing.data.remote.JsonPokemon
+import com.example.pokemon_listing.data.remote.PokemonListResponse
 
 interface PokemonRepository {
 
-    suspend fun getPokemons(limit: Int, offset: Int): List<JsonPokemon>
+    suspend fun getPokemons(limit: Int, offset: Int): PokemonListResponse
 
 }

@@ -8,15 +8,16 @@ import com.example.pokemon_listing.presentation.pokemon_list.PokemonListElementD
 
 fun PokemonEntity.transformToPokemonListDisplayModel(): PokemonListElementDisplayModel {
     return PokemonListElementDisplayModel(
-        name = name,
-        picture = picture
+        name = name
     )
 }
 
 fun PokemonDetailsEntity.transformToPokemonDetailsDisplayModel(): PokemonDetailsDisplayModel {
     return PokemonDetailsDisplayModel(
+        id = id,
         name = name,
         height = height,
-        weight = weight
+        weight = weight,
+        imageUrl = imageUrl
     )
 }

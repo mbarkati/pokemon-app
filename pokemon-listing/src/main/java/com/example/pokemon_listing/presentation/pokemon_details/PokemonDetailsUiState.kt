@@ -12,7 +12,9 @@ sealed interface PokemonDetailsUiState {
 }
 
 data class PokemonDetailsDisplayModel(
+    val id: Int,
     val name: String,
     val height: Int,
-    val weight: Int
+    val weight: Int,
+    val imageUrl: String
 )

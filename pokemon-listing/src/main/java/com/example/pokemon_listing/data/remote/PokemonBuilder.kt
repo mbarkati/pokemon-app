@@ -7,19 +7,16 @@ import com.example.pokemon_listing.domain.model.PokemonEntity
 fun JsonPokemon.toPokemonEntity(): PokemonEntity {
     return PokemonEntity(
         name = name,
-        picture = buildImageUrl(url)
+        url = url
     )
 }
 
 fun JsonPokemonDetails.toPokemonDetailsEntity(): PokemonDetailsEntity {
     return PokemonDetailsEntity(
+        id = id,
         name = name,
         height = height,
-        weight = weight
+        weight = weight,
+        imageUrl = sprites.frontDefault
     )
-}
-
-private fun buildImageUrl(url: String): String {
-    val pokemonId = url.split("/").filter { it.isNotEmpty() }.last()
-    return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png"
 }

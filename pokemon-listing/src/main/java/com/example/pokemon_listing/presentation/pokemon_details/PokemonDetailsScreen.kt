@@ -1,21 +1,25 @@
 package com.example.pokemon_listing.presentation.pokemon_details
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun PokemonDetailsScreen(
@@ -28,19 +32,52 @@ fun PokemonDetailsScreen(
         when (pokemonDetailsUiState) {
 
             is PokemonDetailsUiState.Ready -> {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
                     Text(
-                        text = pokemonDetailsUiState.pokemonDetailsDisplayModel.name
+                        text = pokemonDetailsUiState.pokemonDetailsDisplayModel.name,
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Text(
-                        text = pokemonDetailsUiState.pokemonDetailsDisplayModel.height.toString()
+
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
-                    Text(
-                        text = pokemonDetailsUiState.pokemonDetailsDisplayModel.weight.toString()
+
+                    Text(text = "Height: ${pokemonDetailsUiState.pokemonDetailsDisplayModel.height}")
+
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+
+                    Text(text = "Weight: ${pokemonDetailsUiState.pokemonDetailsDisplayModel.weight}")
+
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(pokemonDetailsUiState.pokemonDetailsDisplayModel.imageUrl),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(200.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
                 }
             }
 

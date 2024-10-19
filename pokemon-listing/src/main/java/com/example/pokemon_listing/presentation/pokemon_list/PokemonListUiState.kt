@@ -1,4 +1,4 @@
-package com.example.pokemon_listing.presentation
+package com.example.pokemon_listing.presentation.pokemon_list
 
 
 sealed interface PokemonListUiState {

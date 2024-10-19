@@ -1,4 +1,4 @@
-package com.example.pokemon_listing.presentation
+package com.example.pokemon_listing.presentation.pokemon_list
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,15 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.pokemon_listing.presentation.components.PokemonListItem
+import androidx.navigation.NavController
+import com.example.pokemon_listing.presentation.Screen
+import com.example.pokemon_listing.presentation.pokemon_list.components.PokemonListItem
 
 
 @Composable
 fun PokemonListScreen(
+    navController: NavController,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
 
     val pokemonListUiState = viewModel.pokemonListUiState.collectAsState().value
+
     Box(modifier = Modifier.fillMaxSize()) {
         when (pokemonListUiState) {
             is PokemonListUiState.Ready -> {
@@ -37,7 +41,7 @@ fun PokemonListScreen(
                         PokemonListItem(
                             pokemon = pokemon,
                             onItemClick = {
-                                // Handle item click
+                                navController.navigate(Screen.PokemonDetailScreen.route + "/${pokemon.name}")
                             }
                         )
                         // Trigger pagination when reaching the end

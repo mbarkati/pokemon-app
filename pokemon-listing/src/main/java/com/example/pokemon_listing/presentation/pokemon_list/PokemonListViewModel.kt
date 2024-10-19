@@ -1,4 +1,4 @@
-package com.example.pokemon_listing.presentation
+package com.example.pokemon_listing.presentation.pokemon_list
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,10 +43,12 @@ class PokemonListViewModel @Inject constructor(
                     is PokemonListStatus.Success -> {
                         offset += limit
                         val newList = currentList + result.pokemons.map { it.transformToPokemonListDisplayModel() }
-                        _pokemonListUiState.value = PokemonListUiState.Ready(pokemonListDisplayModel = newList)
+                        _pokemonListUiState.value =
+                            PokemonListUiState.Ready(pokemonListDisplayModel = newList)
                     }
                     is PokemonListStatus.Error -> {
-                        _pokemonListUiState.value = PokemonListUiState.Error(message = result.message)
+                        _pokemonListUiState.value =
+                            PokemonListUiState.Error(message = result.message)
                     }
                 }
             }

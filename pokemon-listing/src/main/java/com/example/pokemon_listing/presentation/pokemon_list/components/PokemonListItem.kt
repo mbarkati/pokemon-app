@@ -1,6 +1,7 @@
-package com.example.pokemon_listing.presentation.components
+package com.example.pokemon_listing.presentation.pokemon_list.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.pokemon_listing.presentation.PokemonListElementDisplayModel
-import coil.compose.rememberImagePainter
+import com.example.pokemon_listing.presentation.pokemon_list.PokemonListElementDisplayModel
 
 @Composable
 fun PokemonListItem(
@@ -26,7 +26,8 @@ fun PokemonListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable { onItemClick(pokemon) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

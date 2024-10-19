@@ -8,3 +8,9 @@ data class JsonPokemon(
 data class JsonPokemonResponse(
     val results: List<JsonPokemon>
 )
+
+data class JsonPokemonDetails(
+    val name: String,
+    val height: Int,
+    val weight: Int,
+)

@@ -2,12 +2,9 @@ package com.example.pokemon_listing.data.repository
 
 import android.net.http.HttpException
 import com.example.pokemon_listing.data.remote.PokemonApi
+import com.example.pokemon_listing.data.remote.PokemonDetailsResponse
 import com.example.pokemon_listing.data.remote.PokemonListResponse
-import com.example.pokemon_listing.data.remote.toPokemonEntity
 import com.example.pokemon_listing.domain.repository.PokemonRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -24,6 +21,18 @@ class PokemonRepositoryImpl @Inject constructor(
             PokemonListResponse.Failure(message = e.message ?: "")
         } catch (e: IOException) {
             PokemonListResponse.Failure(message = e.message ?: "")
+        }
+    }
+
+    override suspend fun getPokemonDetails(name: String): PokemonDetailsResponse {
+        return try {
+            PokemonDetailsResponse.Success(
+                pokemonDetails = api.getPokemonDetails(name)
+            )
+        } catch (e: HttpException) {
+            PokemonDetailsResponse.Failure(message = e.message ?: "")
+        } catch (e: IOException) {
+            PokemonDetailsResponse.Failure(message = e.message ?: "")
         }
     }
 }

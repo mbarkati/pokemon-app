@@ -12,6 +12,5 @@ sealed interface PokemonListUiState {
 }
 
 data class PokemonListElementDisplayModel(
-    val name: String,
-    val picture: String
+    val name: String
 )

@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -58,9 +59,9 @@ class PokemonListViewModelTest {
 
         // Then
         val currentState = viewModel.pokemonListUiState.value
-        assert(currentState is PokemonListUiState.Ready)
-        val readyState = viewModel.pokemonListUiState.value as PokemonListUiState.Ready
-        assert(mockPokemonList == readyState.pokemonListDisplayModel)
+        assert(currentState is PokemonListUiState.Ready) { "Expected UI state to be Ready" }
+        val readyState = currentState as PokemonListUiState.Ready
+        assertEquals(readyState.pokemonListDisplayModel, mockPokemonList)
     }*/
 
     @Test
@@ -77,9 +78,11 @@ class PokemonListViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        val currentState = viewModel.pokemonListUiState.value
-        assert(currentState is PokemonListUiState.Error) { "Expected UI state to be Error" }
-        val errorState = currentState as PokemonListUiState.Error
-        assert(errorState.message == errorMessage) { "Expected error message to match" }
+        val state = viewModel.pokemonListUiState.value
+        assert(state is PokemonListUiState.Error)
+        val errorState = state as PokemonListUiState.Error
+        assertEquals(
+            errorState.message, errorMessage
+        )
     }
 }

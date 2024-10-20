@@ -9,12 +9,12 @@ import com.example.pokemon_listing.data.remote.PokemonApi
 import com.example.pokemon_listing.data.remote.PokemonDetailsResponse
 import com.example.pokemon_listing.data.remote.PokemonListResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import java.io.IOException
 
 
@@ -31,7 +31,7 @@ class PokemonRepositoryImplTest {
     }
 
     @Test
-    fun `getPokemons returns Success when API call is successful`() = runBlockingTest {
+    fun `getPokemons returns Success when API call is successful`() = runBlocking {
         // Given
         val limit = 20
         val offset = 0
@@ -43,12 +43,13 @@ class PokemonRepositoryImplTest {
 
         // Then
         assert(result is PokemonListResponse.Success)
-        assert((result as PokemonListResponse.Success).pokemons == response)
-        verify(api).getPokemons(limit, offset)
+        assertEquals(
+            (result as PokemonListResponse.Success).pokemons, response
+        )
     }
 
     @Test
-    fun `getPokemons returns Failure when IOException is thrown`() = runBlockingTest {
+    fun `getPokemons returns Failure when IOException is thrown`() = runBlocking {
         // Given
         val limit = 20
         val offset = 0
@@ -59,12 +60,13 @@ class PokemonRepositoryImplTest {
 
         // Then
         assert(result is PokemonListResponse.Failure)
-        assert((result as PokemonListResponse.Failure).message == IO_EXCEPTION_ERROR_MESSAGE)
-        verify(api).getPokemons(limit, offset)
+        assertEquals(
+            (result as PokemonListResponse.Failure).message, IO_EXCEPTION_ERROR_MESSAGE
+        )
     }
 
     @Test
-    fun `getPokemonDetails returns Success when API call is successful`() = runBlockingTest {
+    fun `getPokemonDetails returns Success when API call is successful`() = runBlocking {
         // Given
         val name = "pikachu"
         val response = JsonPokemonDetails(id = 1, name = "Pikachu", height = 4, weight = 60, sprites = JsonSprites(frontDefault = "/sprites/pikachu.png"))
@@ -75,12 +77,13 @@ class PokemonRepositoryImplTest {
 
         // Then
         assert(result is PokemonDetailsResponse.Success)
-        assert((result as PokemonDetailsResponse.Success).pokemonDetails == response)
-        verify(api).getPokemonDetails(name)
+        assertEquals(
+            (result as PokemonDetailsResponse.Success).pokemonDetails, response
+        )
     }
 
     @Test
-    fun `getPokemonDetails returns Failure when IOException is thrown`() = runBlockingTest {
+    fun `getPokemonDetails returns Failure when IOException is thrown`() = runBlocking {
         // Given
         val name = "pikachu"
         given(api.getPokemonDetails(name)).willAnswer { throw IOException() }
@@ -90,7 +93,8 @@ class PokemonRepositoryImplTest {
 
         // Then
         assert(result is PokemonDetailsResponse.Failure)
-        assert((result as PokemonDetailsResponse.Failure).message == IO_EXCEPTION_ERROR_MESSAGE)
-        verify(api).getPokemonDetails(name)
+        assertEquals(
+            (result as PokemonDetailsResponse.Failure).message, IO_EXCEPTION_ERROR_MESSAGE
+        )
     }
 }

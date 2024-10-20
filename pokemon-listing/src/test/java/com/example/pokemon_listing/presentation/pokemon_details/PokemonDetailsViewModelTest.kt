@@ -1,10 +1,10 @@
 package com.example.pokemon_listing.presentation.pokemon_details
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.example.pokemon_listing.common.Constants
 import com.example.pokemon_listing.domain.interactor.GetPokemonDetailsInteractor
 import com.example.pokemon_listing.domain.interactor.PokemonDetailsStatus
+import com.example.pokemon_listing.domain.model.PokemonDetailsEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -12,16 +12,12 @@ import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PokemonDetailsViewModelTest {
-
-    @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = TestCoroutineDispatcher()
     private lateinit var getPokemonDetailsInteractor: GetPokemonDetailsInteractor
@@ -47,7 +43,7 @@ class PokemonDetailsViewModelTest {
 
 
 
-    /*@Test
+    @Test
     fun `getPokemonDetails emits Ready state when interactor returns success`() = runBlocking {
         // Given
         val mockDetails = PokemonDetailsEntity(id = 1, name = "Pikachu", height = 4, weight = 6, imageUrl = "imageUrl")
@@ -59,6 +55,9 @@ class PokemonDetailsViewModelTest {
         viewModel.getPokemonDetails("Pikachu")
         testDispatcher.scheduler.advanceUntilIdle()
 
+        // Debugging log to check the current state
+        println("Current UI state: ${viewModel.pokemonDetailsUiState.value}")
+
         // Then
         val state = viewModel.pokemonDetailsUiState.value
         assert(state is PokemonDetailsUiState.Ready)
@@ -68,7 +67,7 @@ class PokemonDetailsViewModelTest {
                 id = 1, name = "Pikachu", height = 4, weight = 6, imageUrl = "imageUrl"
             )
         )
-    }*/
+    }
 
     @Test
     fun `getPokemonDetails emits Error state when interactor returns failure`() = runBlocking {

@@ -1,7 +1,6 @@
 package com.example.pokemon_listing.data.repository
 
-import android.net.http.HttpException
-import com.example.pokemon_listing.common.Constants.HTTP_EXCEPTION_ERROR_MESSAGE
+
 import com.example.pokemon_listing.common.Constants.IO_EXCEPTION_ERROR_MESSAGE
 import com.example.pokemon_listing.data.remote.PokemonApi
 import com.example.pokemon_listing.data.remote.PokemonDetailsResponse
@@ -19,8 +18,6 @@ class PokemonRepositoryImpl @Inject constructor(
             PokemonListResponse.Success(
                 pokemons = api.getPokemons(limit = limit, offset = offset)
             )
-        } catch (e: HttpException) {
-            PokemonListResponse.Failure(message = e.localizedMessage ?: HTTP_EXCEPTION_ERROR_MESSAGE)
         } catch (e: IOException) {
             PokemonListResponse.Failure(message = IO_EXCEPTION_ERROR_MESSAGE)
         }
@@ -31,8 +28,6 @@ class PokemonRepositoryImpl @Inject constructor(
             PokemonDetailsResponse.Success(
                 pokemonDetails = api.getPokemonDetails(name)
             )
-        } catch (e: HttpException) {
-            PokemonDetailsResponse.Failure(message = e.localizedMessage ?: HTTP_EXCEPTION_ERROR_MESSAGE)
         } catch (e: IOException) {
             PokemonDetailsResponse.Failure(message = IO_EXCEPTION_ERROR_MESSAGE)
         }

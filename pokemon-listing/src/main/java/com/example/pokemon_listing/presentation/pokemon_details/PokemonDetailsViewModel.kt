@@ -32,7 +32,7 @@ class PokemonDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun getPokemonDetails(name: String) {
+    fun getPokemonDetails(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             getPokemonDetailsInteractor.getPokemonDetails(name).let { result ->
                 when (result) {

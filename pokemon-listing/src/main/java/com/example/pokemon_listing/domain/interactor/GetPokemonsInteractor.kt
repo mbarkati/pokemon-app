@@ -10,12 +10,20 @@ class GetPokemonsInteractor @Inject constructor(
     private val repository: PokemonRepository
 ) {
 
-    internal suspend fun getPokemons(limit: Int, offset: Int): PokemonListStatus {
-        return when(val result = repository.getPokemons(limit =limit, offset = offset)){
+    companion object {
+        const val OFFSET_PAGINATION_START = 0
+        const val LIMIT_PAGINATION_START = 20
+    }
+
+    private var offset: Int = OFFSET_PAGINATION_START
+    private val limit: Int = LIMIT_PAGINATION_START
+
+    suspend fun getPokemons(): PokemonListStatus {
+
+        return when(val result = repository.getPokemons(limit = limit, offset = offset)) {
             is PokemonListResponse.Success -> {
-                PokemonListStatus.Success (
-                    pokemons = result.pokemons.results.map { it.toPokemonEntity() }
-                )
+                offset += limit
+                PokemonListStatus.Success(pokemons = result.pokemons.results.map { it.toPokemonEntity() })
             }
             is PokemonListResponse.Failure -> {
                 PokemonListStatus.Error(message = result.message)

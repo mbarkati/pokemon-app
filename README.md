@@ -21,3 +21,7 @@ This Android application displays a list of Pokemon using pagination. When the u
 
 
 ## Screens
+
+![pokem screen1](https://github.com/user-attachments/assets/cd6ea5d3-e4bf-4ac1-827d-563302c81a04)
+
+![pokemon screen2](https://github.com/user-attachments/assets/fed58aec-e705-47f7-b680-476e6e3809d2)

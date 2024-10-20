@@ -3,6 +3,7 @@ package com.example.pokemon_listing.presentation.pokemon_list
 
 import com.example.pokemon_listing.domain.interactor.GetPokemonsInteractor
 import com.example.pokemon_listing.domain.interactor.PokemonListStatus
+import com.example.pokemon_listing.domain.model.PokemonEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -38,7 +39,7 @@ class PokemonListViewModelTest {
         testDispatcher.cleanupTestCoroutines()
     }
 
-    /*@Test
+    @Test
     fun `getPokemons should update UI state to Ready when interactor returns Success`() = runBlocking {
         // Given
         val mockPokemonList = listOf(
@@ -51,7 +52,7 @@ class PokemonListViewModelTest {
                 PokemonEntity(name = "Bulbasaur", url = "https://pokeapi.co/bulbasaur")
             )
         )
-        given(getPokemonsInteractor.getPokemons(limit = 10, offset = 0)).willReturn(mockStatus)
+        given(getPokemonsInteractor.getPokemons()).willReturn(mockStatus)
 
         // When
         viewModel.getPokemons()
@@ -62,13 +63,13 @@ class PokemonListViewModelTest {
         assert(currentState is PokemonListUiState.Ready) { "Expected UI state to be Ready" }
         val readyState = currentState as PokemonListUiState.Ready
         assertEquals(readyState.pokemonListDisplayModel, mockPokemonList)
-    }*/
+    }
 
     @Test
     fun `getPokemons should update UI state to Error when API call fails`() = runBlocking {
         // Given
         val errorMessage = "Failed to fetch pokemons"
-        given(getPokemonsInteractor.getPokemons(limit = 10, offset = 0)).willReturn(
+        given(getPokemonsInteractor.getPokemons()).willReturn(
             PokemonListStatus.Error(message = errorMessage)
 
         )

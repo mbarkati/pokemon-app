@@ -1,10 +1,10 @@
 package com.example.pokemon_listing.domain.interactor
 
+import com.example.pokemon_listing.domain.repository.PokemonRepository
+import com.example.pokemon_listing.data.remote.PokemonListResponse
 import com.example.pokemon_listing.data.remote.JsonPokemon
 import com.example.pokemon_listing.data.remote.JsonPokemonResponse
-import com.example.pokemon_listing.data.remote.PokemonListResponse
 import com.example.pokemon_listing.domain.model.PokemonEntity
-import com.example.pokemon_listing.domain.repository.PokemonRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
@@ -16,59 +16,47 @@ import org.mockito.MockitoAnnotations
 class GetPokemonsInteractorTest {
 
     @Mock
-    private lateinit var mockRepository: PokemonRepository
+    private lateinit var repository: PokemonRepository
 
-    private lateinit var getPokemonsInteractor: GetPokemonsInteractor
+    private lateinit var interactor: GetPokemonsInteractor
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        getPokemonsInteractor = GetPokemonsInteractor(mockRepository)
+        interactor = GetPokemonsInteractor(repository)
     }
 
     @Test
-    fun `getPokemons should return Success when repository returns success`() = runBlocking {
+    fun `getPokemons should return Success when repository returns success`(): Unit = runBlocking {
         // Given
-        val limit = 10
-        val offset = 0
-        val mockPokemons = JsonPokemonResponse(
-            results = listOf(
-                JsonPokemon(name = "Pikachu", url = "https://pokeapi.co/pikachu"),
-                JsonPokemon(name = "Bulbasaur", url = "https://pokeapi.co/bulbasaur")
-            )
-        )
+        val jsonPokemon = JsonPokemon(name = "bulbasaur", url = "url")
+        val jsonPokemonResponse = JsonPokemonResponse(results = listOf(jsonPokemon))
+        val pokemonListResponse = PokemonListResponse.Success(pokemons = jsonPokemonResponse)
+        val expectedEntity = listOf(PokemonEntity(name = "bulbasaur", url = "url"))
 
-        val expectedEntities = listOf(
-            PokemonEntity(name = "Pikachu", url = "https://pokeapi.co/pikachu"),
-            PokemonEntity(name = "Bulbasaur", url = "https://pokeapi.co/bulbasaur")
-        )
-        given(mockRepository.getPokemons(limit, offset)).willReturn(
-            PokemonListResponse.Success(mockPokemons)
-
-        )
+        given(repository.getPokemons(limit = 20, offset = 0)).willReturn(pokemonListResponse)
 
         // When
-        val result = getPokemonsInteractor.getPokemons(limit, offset)
+        val result = interactor.getPokemons()
 
         // Then
-        assertEquals(PokemonListStatus.Success(expectedEntities), result)
+        assertTrue(result is PokemonListStatus.Success)
+        assertEquals(PokemonListStatus.Success(expectedEntity), result)
     }
 
     @Test
     fun `getPokemons should return Error when repository returns failure`() = runBlocking {
         // Given
-        val limit = 10
-        val offset = 0
-        val errorMessage = "Failed to fetch pokemons"
-        given(mockRepository.getPokemons(limit, offset)).willReturn(
-            PokemonListResponse.Failure(errorMessage)
-
-        )
+        val errorMessage = "Error fetching data"
+        val pokemonListResponse = PokemonListResponse.Failure(message = errorMessage)
+        given(repository.getPokemons(limit = 20, offset = 0)).willReturn(pokemonListResponse)
 
         // When
-        val result = getPokemonsInteractor.getPokemons(limit, offset)
+        val result = interactor.getPokemons()
 
         // Then
-        assertEquals(PokemonListStatus.Error(message = errorMessage), result)
+        assertTrue(result is PokemonListStatus.Error)
+        val errorResult = result as PokemonListStatus.Error
+        assertEquals(errorMessage, errorResult.message)
     }
 }
